@@ -23,6 +23,17 @@ def store_chunks(chunks, source_filename):
     )
     print(f"Stored {len(chunks)} chunks from {source_filename} into ChromaDB.")
 
+def search_chunks(question, n_results=3):
+    """
+    Searches ChromaDB for the chunks most relevant to the user's question.
+    Returns a list of matching text chunks.
+    """
+    results = collection.query(
+        query_texts=[question],
+        n_results=n_results,
+    )
+    # results["documents"][0] is the list of matching chunk texts
+    return results["documents"][0]
 if __name__ == "__main__":
     text = extract_text_from_pdf("sample.pdf")
     chunks = chunk_text(text)

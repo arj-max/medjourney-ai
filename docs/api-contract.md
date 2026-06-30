@@ -1,112 +1,62 @@
-\# MedJourney AI – API Contract
-
-
+# MedJourney AI – API Contract
 
 This document describes what each backend API endpoint expects and returns, so frontend and backend work can stay in sync without reading each other's code.
 
+> ⚠️ NOTE (Alaina): The /chat endpoint below uses the Google Gemini API instead of Claude,
+> since we didn't have budget for Claude API credits yet. Logic and response format are
+> identical — just swap the API call if/when Claude access is set up.
 
+---
 
-\---
-
-
-
-\## POST /upload  (built by Anjana — DONE)
-
-
+## POST /upload  (built by Anjana — DONE)
 
 Uploads a PDF, extracts its text, splits it into chunks, and stores those chunks in ChromaDB.
 
+**Request:** multipart/form-data with one field:
+- `file`: a PDF file
 
-
-\*\*Request:\*\* multipart/form-data with one field:
-
-\- `file`: a PDF file
-
-
-
-\*\*Response (200 success):\*\*
-
+**Response (200 success):**
 ```json
-
 {
-
-&#x20; "filename": "example.pdf",
-
-&#x20; "chunks\_created": 62,
-
-&#x20; "status": "success"
-
+  "filename": "example.pdf",
+  "chunks_created": 62,
+  "status": "success"
 }
-
 ```
 
+---
 
+## POST /chat  (built by Alaina — DONE)
 
-\---
+Accepts a user's question, searches ChromaDB for relevant chunks, sends them to the Gemini API along with the question, and returns an answer based only on the retrieved document content.
 
-
-
-\## POST /chat  (to be built by Alaina — PLACEHOLDER, details TBD)
-
-
-
-Will accept a user's question, search ChromaDB for relevant chunks, send them to the Claude API, and return an answer.
-
-
-
-\*\*Expected request (placeholder):\*\*
-
+**Request:**
 ```json
-
 {
-
-&#x20; "question": "What medications were prescribed?"
-
+  "question": "What medications were prescribed?"
 }
-
 ```
 
-
-
-\*\*Expected response (placeholder):\*\*
-
+**Response (200 success):**
 ```json
-
 {
-
-&#x20; "answer": "..."
-
+  "answer": "..."
 }
-
 ```
 
+Note: if the answer isn't found in the uploaded documents, the response will say so (e.g. "I don't know.") rather than guessing.
 
+---
 
-\---
+## GET /documents  (built by Alaina — DONE)
 
+Lists documents that have been uploaded so far. Currently stored in-memory (resets when the server restarts); will move to a proper Supabase database later.
 
-
-\## GET /documents  (to be built by Alaina — PLACEHOLDER, details TBD)
-
-
-
-Will list documents that have been uploaded so far.
-
-
-
-\*\*Expected response (placeholder):\*\*
-
+**Response (200 success):**
 ```json
-
 {
-
-&#x20; "documents": \[
-
-&#x20;   { "filename": "example.pdf", "uploaded\_at": "..." }
-
-&#x20; ]
-
+  "documents": [
+    { "filename": "example.pdf", "uploaded_at": "2026-06-30T09:03:56.627637" }
+  ]
 }
-
 ```
-
